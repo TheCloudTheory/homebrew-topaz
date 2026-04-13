@@ -41,9 +41,13 @@ jobs:
 
           curl -fsSL "${BASE}/topaz-osx-arm64" -o topaz-osx-arm64
           curl -fsSL "${BASE}/topaz-osx-x64"   -o topaz-osx-x64
+          curl -fsSL "${BASE}/topaz.crt"        -o topaz.crt
+          curl -fsSL "${BASE}/topaz.pfx"        -o topaz.pfx
 
           echo "arm64=$(sha256sum topaz-osx-arm64 | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "x64=$(sha256sum topaz-osx-x64   | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "x64=$(sha256sum topaz-osx-x64     | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "crt=$(sha256sum topaz.crt         | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          echo "pfx=$(sha256sum topaz.pfx         | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Patch formula
         run: |
@@ -52,10 +56,12 @@ jobs:
             "${{ steps.tag.outputs.version }}" \
             "${{ steps.sha256.outputs.arm64 }}" \
             "${{ steps.sha256.outputs.x64 }}" \
+            "${{ steps.sha256.outputs.crt }}" \
+            "${{ steps.sha256.outputs.pfx }}" \
           <<'EOF'
           import re, sys
 
-          tag, version, arm64_sha, x64_sha = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+          tag, version, arm64_sha, x64_sha, crt_sha, pfx_sha = sys.argv[1:7]
 
           with open("Formula/topaz.rb") as f:
               c = f.read()
@@ -68,6 +74,12 @@ jobs:
           c = re.sub(
               r'(url "https://github\.com/TheCloudTheory/Topaz/releases/download/)[^/]+(/topaz-osx-x64")',
               rf'\g<1>{tag}\2', c)
+          c = re.sub(
+              r'(url "https://github\.com/TheCloudTheory/Topaz/releases/download/)[^/]+(/topaz\.crt")',
+              rf'\g<1>{tag}\2', c)
+          c = re.sub(
+              r'(url "https://github\.com/TheCloudTheory/Topaz/releases/download/)[^/]+(/topaz\.pfx")',
+              rf'\g<1>{tag}\2', c)
 
           c = re.sub(
               r'(url "https://github[^"]+topaz-osx-arm64"\n\s+sha256 ")[a-f0-9]+(")',
@@ -75,11 +87,19 @@ jobs:
           c = re.sub(
               r'(url "https://github[^"]+topaz-osx-x64"\n\s+sha256 ")[a-f0-9]+(")',
               rf'\g<1>{x64_sha}\2', c)
+          c = re.sub(
+              r'(url "https://github[^"]+topaz\.crt"\n\s+sha256 ")[a-f0-9]+(")',
+              rf'\g<1>{crt_sha}\2', c)
+          c = re.sub(
+              r'(url "https://github[^"]+topaz\.pfx"\n\s+sha256 ")[a-f0-9]+(")',
+              rf'\g<1>{pfx_sha}\2', c)
 
           with open("Formula/topaz.rb", "w") as f:
               f.write(c)
 
-          print(f"Patched formula → {version}  arm64={arm64_sha[:12]}…  x64={x64_sha[:12]}…")
+          print(f"Patched formula → {version}")
+          print(f"  arm64={arm64_sha[:12]}…  x64={x64_sha[:12]}…")
+          print(f"  crt={crt_sha[:12]}…      pfx={pfx_sha[:12]}…")
           EOF
 
       - name: Open pull request
@@ -92,8 +112,10 @@ jobs:
           body: |
             Automated formula update for Topaz `${{ steps.tag.outputs.tag }}`.
 
-            | Binary | SHA256 |
+            | Asset | SHA256 |
             |---|---|
             | `topaz-osx-arm64` | `${{ steps.sha256.outputs.arm64 }}` |
             | `topaz-osx-x64`   | `${{ steps.sha256.outputs.x64 }}` |
+            | `topaz.crt`       | `${{ steps.sha256.outputs.crt }}` |
+            | `topaz.pfx`       | `${{ steps.sha256.outputs.pfx }}` |
           labels: pr-pull

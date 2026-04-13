@@ -6,6 +6,17 @@ class Topaz < Formula
 
   depends_on "dnsmasq"
 
+  # TLS certificates required by Topaz at startup — same for all platforms
+  resource "topaz_crt" do
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz.crt"
+    sha256 "bef140a1a96994029153dca8c00b1750b9a5a764fb9db2dc68d7bb40e8a29e8a"
+  end
+
+  resource "topaz_pfx" do
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz.pfx"
+    sha256 "ec426ba25083b97093a1045196f189ba453582b468484ffaacecf18ba4a4a708"
+  end
+
   on_macos do
     on_arm do
       url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-arm64"
@@ -23,6 +34,9 @@ class Topaz < Formula
       on_arm { bin.install "topaz-osx-arm64" => "topaz" }
       on_intel { bin.install "topaz-osx-x64" => "topaz" }
     end
+
+    resource("topaz_crt").stage { bin.install "topaz.crt" }
+    resource("topaz_pfx").stage { bin.install "topaz.pfx" }
   end
 
   def post_install
