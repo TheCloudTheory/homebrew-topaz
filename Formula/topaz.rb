@@ -17,22 +17,49 @@ class Topaz < Formula
     sha256 "b78e595ffe3e44838ac30ee82b92c7239b8e496e05ba5c4eedf5c3fe3ca61da6"
   end
 
+  # Topaz Host — the emulator process
   on_macos do
     on_arm do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-arm64"
-      sha256 "55ba64248b0f7ca0e55760d6092bc37811878c7131f8cf2553a4f7b34b3239ee"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-host-osx-arm64"
+      sha256 :no_check
     end
 
     on_intel do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-x64"
-      sha256 "7423ab6907f3e41eff48d92d79f31a181747567e78cfd17933d933ef959b6a8c"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-host-osx-x64"
+      sha256 :no_check
+    end
+  end
+
+  # Topaz CLI — resource management tool
+  resource "topaz_cli" do
+    on_macos do
+      on_arm do
+        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-arm64"
+        sha256 "55ba64248b0f7ca0e55760d6092bc37811878c7131f8cf2553a4f7b34b3239ee"
+      end
+
+      on_intel do
+        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-x64"
+        sha256 "7423ab6907f3e41eff48d92d79f31a181747567e78cfd17933d933ef959b6a8c"
+      end
     end
   end
 
   def install
     on_macos do
-      on_arm { bin.install "topaz-osx-arm64" => "topaz" }
-      on_intel { bin.install "topaz-osx-x64" => "topaz" }
+      on_arm do
+        bin.install "topaz-host-osx-arm64" => "topaz-host"
+      end
+      on_intel do
+        bin.install "topaz-host-osx-x64" => "topaz-host"
+      end
+    end
+
+    resource("topaz_cli").stage do
+      on_macos do
+        on_arm { bin.install "topaz-osx-arm64" => "topaz" }
+        on_intel { bin.install "topaz-osx-x64" => "topaz" }
+      end
     end
 
     resource("topaz_crt").stage { bin.install "topaz.crt" }
@@ -81,14 +108,23 @@ class Topaz < Formula
   end
 
   test do
+    assert_predicate bin/"topaz-host", :executable?
     assert_predicate bin/"topaz", :executable?
+    system bin/"topaz-host", "--help"
     system bin/"topaz", "--help"
   end
 
   def caveats
     <<~EOS
-      Topaz has been installed as `topaz`. To start the emulator:
-        topaz start
+      Topaz has been installed as two separate executables:
+        - `topaz-host` — the emulator process
+        - `topaz`      — the CLI for managing resources
+
+      To start the emulator:
+        topaz-host --log-level Information
+
+      Then use `topaz` in a separate terminal to manage resources:
+        topaz subscription create --id <guid> --name "dev-local"
 
       DNS setup was performed during installation:
         - dnsmasq configured to resolve *.topaz.local.dev → 127.0.0.1
