@@ -9,12 +9,12 @@ class Topaz < Formula
   # TLS certificates required by Topaz at startup — same for all platforms
   resource "topaz_crt" do
     url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz.crt"
-    sha256 "bef140a1a96994029153dca8c00b1750b9a5a764fb9db2dc68d7bb40e8a29e8a"
+    sha256 "7c2c08addd35ae719f1ef30d2fbf2df5ea4d398df4526c5ea00aaacb5580fb72"
   end
 
   resource "topaz_pfx" do
     url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz.pfx"
-    sha256 "ec426ba25083b97093a1045196f189ba453582b468484ffaacecf18ba4a4a708"
+    sha256 "b78e595ffe3e44838ac30ee82b92c7239b8e496e05ba5c4eedf5c3fe3ca61da6"
   end
 
   on_macos do
