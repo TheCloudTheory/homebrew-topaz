@@ -1,5 +1,5 @@
 class Topaz < Formula
-  desc "Single-binary Azure emulator for local development and testing"
+  desc "Single-binary Azure emulator for local development, testing and CI"
   homepage "https://topaz.thecloudtheory.com"
   version "1.1.20-beta"
   license "Apache-2.0"
