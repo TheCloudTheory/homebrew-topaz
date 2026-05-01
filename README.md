@@ -1,6 +1,13 @@
 # homebrew-topaz
 
-Homebrew tap for [Topaz](https://github.com/TheCloudTheory/Topaz) — a single-binary Azure emulator for local development and testing.
+Homebrew tap for [Topaz](https://github.com/TheCloudTheory/Topaz) — an Azure emulator for local development and testing.
+
+Topaz ships as two separate binaries:
+
+| Binary | Purpose |
+|--------|---------|
+| `topaz-host` | The emulator process — runs all Azure service endpoints |
+| `topaz` | The CLI client — manages resources against a running host |
 
 ## Install
 
@@ -16,7 +23,7 @@ brew install thecloudtheory/topaz/topaz
 ```
 
 This will:
-- Install the `topaz` binary
+- Install the `topaz-host` and `topaz` binaries
 - Install and configure `dnsmasq` to resolve `*.topaz.local.dev` locally
 - Create the necessary `/etc/resolver/` entries for all emulated Azure service domains
 
@@ -24,10 +31,16 @@ This will:
 
 ## Usage
 
-Start the emulator:
+Start the emulator host:
 
 ```bash
-topaz start
+topaz-host start
+```
+
+Then interact with it using the CLI (in a separate terminal):
+
+```bash
+topaz <command>
 ```
 
 Verify DNS is working:
