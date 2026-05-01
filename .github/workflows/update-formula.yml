@@ -33,6 +33,15 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Tag: $TAG  Version: $VERSION"
 
+      - name: Verify release exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          echo "Checking release: $TAG"
+          gh release view "$TAG" --repo TheCloudTheory/Topaz \
+            || { echo "ERROR: Release '$TAG' not found on TheCloudTheory/Topaz. Publish the release first."; exit 1; }
+
       - name: Download binaries and compute SHA256
         id: sha256
         run: |
