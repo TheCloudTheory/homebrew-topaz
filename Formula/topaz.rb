@@ -1,7 +1,7 @@
 class Topaz < Formula
   desc "Single-binary Azure emulator for local development, testing and CI"
   homepage "https://topaz.thecloudtheory.com"
-  version "1.1.20-beta"
+  version "1.2.3-beta"
   license "Apache-2.0"
 
   depends_on :macos
@@ -21,13 +21,13 @@ class Topaz < Formula
   # Topaz Host — the emulator process
   on_macos do
     on_arm do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-host-osx-arm64"
-      sha256 :no_check
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.3-beta/topaz-host-osx-arm64"
+      sha256 "389c635dc841d2458b3aa44949b52cbb8daa333e02b0219c4c1828ed69975070"
     end
 
     on_intel do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-host-osx-x64"
-      sha256 :no_check
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.3-beta/topaz-host-osx-x64"
+      sha256 "f28e00021a8f1f410cc9c4c10ed3cb879ec9982428161aa870d8a5b0baa6c506"
     end
   end
 
@@ -35,13 +35,13 @@ class Topaz < Formula
   resource "topaz_cli" do
     on_macos do
       on_arm do
-        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-arm64"
-        sha256 "55ba64248b0f7ca0e55760d6092bc37811878c7131f8cf2553a4f7b34b3239ee"
+        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.3-beta/topaz-osx-arm64"
+        sha256 "84856867efb6b0504f55110332f7d42136ada8d6a6606c1620f6584e29b9d66f"
       end
 
       on_intel do
-        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.1.20-beta/topaz-osx-x64"
-        sha256 "7423ab6907f3e41eff48d92d79f31a181747567e78cfd17933d933ef959b6a8c"
+        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.3-beta/topaz-osx-x64"
+        sha256 "79a727e62d79eed7c38cae57b481bbcdfa291f70a3fc8d6a7fe0dd330a3f0cd0"
       end
     end
   end
@@ -88,9 +88,6 @@ class Topaz < Formula
 
     # Create /etc/resolver entries so macOS routes *.topaz.local.dev to dnsmasq.
     # Run the commands printed in the caveats section once with sudo.
-
-    # Restart dnsmasq to pick up the new configuration
-    system "brew", "services", "restart", "dnsmasq"
   end
 
   test do
@@ -112,7 +109,7 @@ class Topaz < Formula
       Then use `topaz` in a separate terminal to manage resources:
         topaz subscription create --id <guid> --name "dev-local"
 
-      DNS — dnsmasq was configured and restarted during installation.
+      DNS — dnsmasq was configured during installation.
       To complete DNS setup, run these commands once (requires sudo):
 
         sudo mkdir -p /etc/resolver
@@ -121,6 +118,9 @@ class Topaz < Formula
                       servicebus.topaz.local.dev eventhub.topaz.local.dev; do
           printf 'nameserver 127.0.0.1\\nport 53\\n' | sudo tee /etc/resolver/$domain >/dev/null
         done
+
+      Then restart dnsmasq to pick up the new configuration:
+        brew services restart dnsmasq
 
       To verify DNS is working:
         dig test.topaz.local.dev @127.0.0.1
