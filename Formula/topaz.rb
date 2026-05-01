@@ -4,6 +4,7 @@ class Topaz < Formula
   version "1.1.20-beta"
   license "Apache-2.0"
 
+  depends_on :macos
   depends_on "dnsmasq"
 
   # TLS certificates required by Topaz at startup — same for all platforms
@@ -86,22 +87,7 @@ class Topaz < Formula
     CONF
 
     # Create /etc/resolver entries so macOS routes *.topaz.local.dev to dnsmasq.
-    # Each entry covers that domain and all subdomains at any depth, so
-    # storage.topaz.local.dev covers foo.blob.storage.topaz.local.dev etc.
-    # This is a system path — sudo is required and will prompt the user once.
-    system "sudo", "mkdir", "-p", "/etc/resolver"
-
-    %w[
-      topaz.local.dev
-      keyvault.topaz.local.dev
-      storage.topaz.local.dev
-      cr.topaz.local.dev
-      servicebus.topaz.local.dev
-      eventhub.topaz.local.dev
-    ].each do |domain|
-      system "sudo", "bash", "-c",
-        "printf 'nameserver 127.0.0.1\\nport 53\\n' > /etc/resolver/#{domain}"
-    end
+    # Run the commands printed in the caveats section once with sudo.
 
     # Restart dnsmasq to pick up the new configuration
     system "brew", "services", "restart", "dnsmasq"
@@ -126,10 +112,15 @@ class Topaz < Formula
       Then use `topaz` in a separate terminal to manage resources:
         topaz subscription create --id <guid> --name "dev-local"
 
-      DNS setup was performed during installation:
-        - dnsmasq configured to resolve *.topaz.local.dev → 127.0.0.1
-        - Resolver entries created in /etc/resolver/ for:
-            keyvault, storage (covers .blob/.table/.queue/.file), cr, servicebus, eventhub
+      DNS — dnsmasq was configured and restarted during installation.
+      To complete DNS setup, run these commands once (requires sudo):
+
+        sudo mkdir -p /etc/resolver
+        for domain in topaz.local.dev keyvault.topaz.local.dev \\
+                      storage.topaz.local.dev cr.topaz.local.dev \\
+                      servicebus.topaz.local.dev eventhub.topaz.local.dev; do
+          printf 'nameserver 127.0.0.1\\nport 53\\n' | sudo tee /etc/resolver/$domain >/dev/null
+        done
 
       To verify DNS is working:
         dig test.topaz.local.dev @127.0.0.1
