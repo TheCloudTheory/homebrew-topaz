@@ -55,12 +55,14 @@ jobs:
           curl -fsSL "${BASE}/topaz.crt"             -o topaz.crt
           curl -fsSL "${BASE}/topaz.pfx"             -o topaz.pfx
 
-          echo "host_arm64=$(sha256sum topaz-host-osx-arm64 | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "host_x64=$(sha256sum topaz-host-osx-x64     | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "arm64=$(sha256sum topaz-osx-arm64           | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "x64=$(sha256sum topaz-osx-x64               | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "crt=$(sha256sum topaz.crt                   | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-          echo "pfx=$(sha256sum topaz.pfx                   | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
+          {
+            echo "host_arm64=$(sha256sum topaz-host-osx-arm64 | cut -d' ' -f1)"
+            echo "host_x64=$(sha256sum topaz-host-osx-x64     | cut -d' ' -f1)"
+            echo "arm64=$(sha256sum topaz-osx-arm64           | cut -d' ' -f1)"
+            echo "x64=$(sha256sum topaz-osx-x64               | cut -d' ' -f1)"
+            echo "crt=$(sha256sum topaz.crt                   | cut -d' ' -f1)"
+            echo "pfx=$(sha256sum topaz.pfx                   | cut -d' ' -f1)"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Patch formula
         run: |

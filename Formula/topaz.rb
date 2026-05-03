@@ -4,8 +4,18 @@ class Topaz < Formula
   version "1.2.6-beta"
   license "Apache-2.0"
 
-  depends_on :macos
   depends_on "dnsmasq"
+  depends_on :macos
+
+  on_arm do
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-arm64"
+    sha256 "f382f038955e275b5ec5b918f658aee1dfd4d1a2e0028007e2e0ba27a544ad5f"
+  end
+
+  on_intel do
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-x64"
+    sha256 "92e9819f9b6bbd205cee30a3e4bbdfd39e030ef8a8593f8704a342a95fef572a"
+  end
 
   # TLS certificates required by Topaz at startup — same for all platforms
   resource "topaz_crt" do
@@ -18,48 +28,31 @@ class Topaz < Formula
     sha256 "3a52252d5d3649cdbc73f369bc6e665450c38b43af7552ff3689d5e0c502422f"
   end
 
-  # Topaz Host — the emulator process
-  on_macos do
+  # Topaz CLI — resource management tool
+  resource "topaz_cli" do
     on_arm do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-arm64"
-      sha256 "f382f038955e275b5ec5b918f658aee1dfd4d1a2e0028007e2e0ba27a544ad5f"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-osx-arm64"
+      sha256 "ede4c29437caa7664b916bffa2e1084a80740f2382896f3989280a77b07aa14f"
     end
 
     on_intel do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-x64"
-      sha256 "92e9819f9b6bbd205cee30a3e4bbdfd39e030ef8a8593f8704a342a95fef572a"
-    end
-  end
-
-  # Topaz CLI — resource management tool
-  resource "topaz_cli" do
-    on_macos do
-      on_arm do
-        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-osx-arm64"
-        sha256 "ede4c29437caa7664b916bffa2e1084a80740f2382896f3989280a77b07aa14f"
-      end
-
-      on_intel do
-        url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-osx-x64"
-        sha256 "c5ffe94a5f3d2c6b0e6c07b210e3fe0a7f06f18fae168848bb51c16e76f7f7b4"
-      end
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-osx-x64"
+      sha256 "c5ffe94a5f3d2c6b0e6c07b210e3fe0a7f06f18fae168848bb51c16e76f7f7b4"
     end
   end
 
   def install
-    on_macos do
-      on_arm do
-        bin.install "topaz-host-osx-arm64" => "topaz-host"
-      end
-      on_intel do
-        bin.install "topaz-host-osx-x64" => "topaz-host"
-      end
+    if Hardware::CPU.arm?
+      bin.install "topaz-host-osx-arm64" => "topaz-host"
+    elsif Hardware::CPU.intel?
+      bin.install "topaz-host-osx-x64" => "topaz-host"
     end
 
     resource("topaz_cli").stage do
-      on_macos do
-        on_arm { bin.install "topaz-osx-arm64" => "topaz" }
-        on_intel { bin.install "topaz-osx-x64" => "topaz" }
+      if Hardware::CPU.arm?
+        bin.install "topaz-osx-arm64" => "topaz"
+      elsif Hardware::CPU.intel?
+        bin.install "topaz-osx-x64" => "topaz"
       end
     end
 
