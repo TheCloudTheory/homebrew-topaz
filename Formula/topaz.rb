@@ -4,6 +4,10 @@ class Topaz < Formula
   version "1.2.6-beta"
   license "Apache-2.0"
 
+  # head is required so brew readall --os=all treats the formula as head_only? on Linux,
+  # suppressing the "requires at least a URL" check for non-macOS platforms.
+  head "https://github.com/TheCloudTheory/Topaz.git", branch: "main"
+
   depends_on "dnsmasq"
   depends_on :macos
 
@@ -17,10 +21,6 @@ class Topaz < Formula
       url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-x64"
       sha256 "92e9819f9b6bbd205cee30a3e4bbdfd39e030ef8a8593f8704a342a95fef572a"
     end
-  end
-
-  on_linux do
-    disable! date: "2026-05-03", because: :unsupported
   end
 
   # TLS certificates required by Topaz at startup — same for all platforms
