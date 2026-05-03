@@ -130,6 +130,9 @@ jobs:
           print(f"  crt={crt_sha[:12]}…      pfx={pfx_sha[:12]}…")
           EOF
 
+      - name: Clean up downloaded binaries
+        run: rm -f topaz-host-osx-arm64 topaz-host-osx-x64 topaz-osx-arm64 topaz-osx-x64 topaz.crt topaz.pfx
+
       - name: Open pull request
         uses: peter-evans/create-pull-request@v7
         with:
