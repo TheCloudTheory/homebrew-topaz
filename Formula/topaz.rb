@@ -7,14 +7,20 @@ class Topaz < Formula
   depends_on "dnsmasq"
   depends_on :macos
 
-  on_arm do
-    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-arm64"
-    sha256 "f382f038955e275b5ec5b918f658aee1dfd4d1a2e0028007e2e0ba27a544ad5f"
+  on_macos do
+    on_arm do
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-arm64"
+      sha256 "f382f038955e275b5ec5b918f658aee1dfd4d1a2e0028007e2e0ba27a544ad5f"
+    end
+
+    on_intel do
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-x64"
+      sha256 "92e9819f9b6bbd205cee30a3e4bbdfd39e030ef8a8593f8704a342a95fef572a"
+    end
   end
 
-  on_intel do
-    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.2.6-beta/topaz-host-osx-x64"
-    sha256 "92e9819f9b6bbd205cee30a3e4bbdfd39e030ef8a8593f8704a342a95fef572a"
+  on_linux do
+    disable! date: "2026-05-03", because: :unsupported
   end
 
   # TLS certificates required by Topaz at startup — same for all platforms
