@@ -1,7 +1,7 @@
 class Topaz < Formula
   desc "Single-binary Azure emulator for local development, testing and CI"
   homepage "https://topaz.thecloudtheory.com"
-  version "1.3.98-beta"
+  version "1.4.101-beta"
   license "Apache-2.0"
 
   # head is required so brew readall --os=all treats the formula as head_only? on Linux,
@@ -13,37 +13,37 @@ class Topaz < Formula
 
   on_macos do
     on_arm do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz-host-osx-arm64"
-      sha256 "5d60dadc651e2b1f81e97418212f6d931b1d59d4dbb5a9d5d62bb701b912c32f"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz-host-osx-arm64"
+      sha256 "17ce8752fa312bd524a4feee22e4d550e9df189bb66ebd7f59ae71ce92b367f5"
     end
 
     on_intel do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz-host-osx-x64"
-      sha256 "91e52a81e1c224861643d9323d76ac1b03f58eb30a78c85c546a209965f5c8dd"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz-host-osx-x64"
+      sha256 "50846a6d20238b407551ccbfa24c69d5c4a65164b36b19d73c16c57ec2e4db1f"
     end
   end
 
   # TLS certificates required by Topaz at startup — same for all platforms
   resource "topaz_crt" do
-    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz.crt"
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz.crt"
     sha256 "59ef64d94aaac7b988da817f692b52a4b5eb56165a33c042e0dbdde83d952a88"
   end
 
   resource "topaz_pfx" do
-    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz.pfx"
+    url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz.pfx"
     sha256 "3a52252d5d3649cdbc73f369bc6e665450c38b43af7552ff3689d5e0c502422f"
   end
 
   # Topaz CLI — resource management tool
   resource "topaz_cli" do
     on_arm do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz-osx-arm64"
-      sha256 "d68b25855ac633ebd4401f68cfaf52fd09005b8e467425661982732ff5c970fd"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz-osx-arm64"
+      sha256 "c805c4a17d84036ae526c38f424ca041c960605e7b78952654bd3d8ff7a71b13"
     end
 
     on_intel do
-      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.3.98-beta/topaz-osx-x64"
-      sha256 "c8349cef731913ae759a1d1015dceb79c7f2245a12eaccd305de46021badce3e"
+      url "https://github.com/TheCloudTheory/Topaz/releases/download/v1.4.101-beta/topaz-osx-x64"
+      sha256 "0a8cf1b200cb1841b0e22f6a3372d965946bb0b7d694ea131be94613659e92fb"
     end
   end
 
