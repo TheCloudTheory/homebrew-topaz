@@ -34,7 +34,7 @@ This will:
 Start the emulator host:
 
 ```bash
-topaz-host start
+topaz-host
 ```
 
 Then interact with it using the CLI (in a separate terminal):
