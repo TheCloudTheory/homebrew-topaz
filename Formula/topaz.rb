@@ -76,21 +76,10 @@ class Topaz < Formula
 
   def post_install
     # Write dnsmasq wildcard rules — Homebrew-owned path, no sudo required
-    # The storage entry covers all per-account subdomains:
-    #   {account}.blob.storage.topaz.local.dev
-    #   {account}.table.storage.topaz.local.dev
-    #   {account}.queue.storage.topaz.local.dev
-    #   {account}.file.storage.topaz.local.dev
-    # The cr entry covers per-registry ACR subdomains:
-    #   {registry}.cr.topaz.local.dev
+    # Single wildcard resolves all *.topaz.local.dev subdomains to localhost.
     (etc/"dnsmasq.d").mkpath
     (etc/"dnsmasq.d/topaz.conf").write <<~CONF
       address=/.topaz.local.dev/127.0.0.1
-      address=/.keyvault.topaz.local.dev/127.0.0.1
-      address=/.storage.topaz.local.dev/127.0.0.1
-      address=/.cr.topaz.local.dev/127.0.0.1
-      address=/.servicebus.topaz.local.dev/127.0.0.1
-      address=/.eventhub.topaz.local.dev/127.0.0.1
     CONF
 
     # Create /etc/resolver entries so macOS routes *.topaz.local.dev to dnsmasq.
@@ -113,11 +102,7 @@ class Topaz < Formula
       To complete DNS setup, run these commands once (requires sudo):
 
         sudo mkdir -p /etc/resolver
-        for domain in topaz.local.dev keyvault.topaz.local.dev \\
-                      storage.topaz.local.dev cr.topaz.local.dev \\
-                      servicebus.topaz.local.dev eventhub.topaz.local.dev; do
-          printf 'nameserver 127.0.0.1\\nport 53\\n' | sudo tee /etc/resolver/$domain >/dev/null
-        done
+        printf 'nameserver 127.0.0.1\\nport 53\\n' | sudo tee /etc/resolver/topaz.local.dev >/dev/null
 
       Then restart dnsmasq to pick up the new configuration:
         brew services restart dnsmasq
