@@ -49,10 +49,21 @@ class Topaz < Formula
 
   def install
     if Hardware::CPU.arm?
-      bin.install "topaz-host-osx-arm64" => "topaz-host"
+      libexec.install "topaz-host-osx-arm64" => "topaz-host"
     elsif Hardware::CPU.intel?
-      bin.install "topaz-host-osx-x64" => "topaz-host"
+      libexec.install "topaz-host-osx-x64" => "topaz-host"
     end
+
+    resource("topaz_crt").stage { libexec.install "topaz.crt" }
+    resource("topaz_pfx").stage { libexec.install "topaz.pfx" }
+
+    # Wrapper script so topaz-host runs from libexec (certs are resolved relative to cwd)
+    (bin/"topaz-host").write <<~SH
+      #!/bin/bash
+      cd "#{libexec}"
+      exec "#{libexec}/topaz-host" "$@"
+    SH
+    (bin/"topaz-host").chmod 0755
 
     resource("topaz_cli").stage do
       if Hardware::CPU.arm?
@@ -61,9 +72,6 @@ class Topaz < Formula
         bin.install "topaz-osx-x64" => "topaz"
       end
     end
-
-    resource("topaz_crt").stage { bin.install "topaz.crt" }
-    resource("topaz_pfx").stage { bin.install "topaz.pfx" }
   end
 
   def post_install
