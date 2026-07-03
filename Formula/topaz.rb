@@ -53,9 +53,17 @@ class Topaz < Formula
     elsif Hardware::CPU.intel?
       libexec.install "topaz-host-osx-x64" => "topaz-host"
     end
+    (libexec/"topaz-host").chmod 0755
 
     resource("topaz_crt").stage { libexec.install "topaz.crt" }
     resource("topaz_pfx").stage { libexec.install "topaz.pfx" }
+
+    # Extract the private key from the PFX so topaz-host can find topaz.key at runtime
+    system "openssl", "pkcs12",
+           "-in", libexec/"topaz.pfx",
+           "-nocerts", "-nodes",
+           "-out", libexec/"topaz.key",
+           "-passin", "pass:qwerty"
 
     # Wrapper script so topaz-host runs from libexec (certs are resolved relative to cwd)
     (bin/"topaz-host").write <<~SH
