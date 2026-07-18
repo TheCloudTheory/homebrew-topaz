@@ -82,7 +82,7 @@ class Topaz < Formula
     end
   end
 
-  def post_install
+  def post_install_steps
     # Write dnsmasq wildcard rules — Homebrew-owned path, no sudo required
     # Single wildcard resolves all *.topaz.local.dev subdomains to localhost.
     (etc/"dnsmasq.d").mkpath
